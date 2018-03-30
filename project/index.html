@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Find Nearest Washroom</title>
+
+    <link rel="stylesheet" href="styles.css">
+    <script type="text/javascript" src="points.geojson"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ==" crossorigin="" />
+	<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet-src.js" integrity="sha512-WXoSHqw/t26DszhdMhOXOkI7qCiv5QWXhH9R7CgvgZMHz1ImlkVQ3uNsiQKu5wwbbxtPzFXd1hK4tzno2VqhpA==" crossorigin=""></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="./dist/MarkerCluster.css" />
+	<link rel="stylesheet" href="./dist/MarkerCluster.Default.css" />
+	<script src="./dist/leaflet.markercluster-src.js"></script>
+	
+
+</head>
+
+<body>
+    <div id='map'></div>
+    <div id='ui'>
+        <button id='locate'>
+            Find my location
+        </button>
+        <button id='find-nearest'>
+            Find Nearest Washrooms
+        </button>
+    </div>
+
+   <div id="loader-wrapper">
+        <div id="loader"></div>
+        <div class="loader-section section-left"></div>
+        <div class="loader-section section-right"></div>
+        <p id='status'>loading washroom data</p>
+        
+    </div> 
+
+
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+    
+    <script type="text/javascript">
+        var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				maxZoom: 18,
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | <a href="http://opendata-city-of-waterloo.opendata.arcgis.com/datasets/37b5251639044da99e66c6e6288a0c5b_18/data?geometry=-81.02%2C43.387%2C-80.031%2C43.562">Waterloo Open Data</a>'
+			}),
+			latlng = L.latLng(43.47, -80.548);
+
+		var map = L.map('map', {center: latlng, zoom: 11, layers: [tiles]});
+
+	   var blueIcon = L.icon({
+           iconUrl: 'toilet.png',
+           iconSize:     [16, 17], // size of the icon   
+       });
+        
+	   var points =new L.geoJson(points, {
+		pointToLayer : function(feature, latlng) {
+               return L.marker(latlng, {icon:blueIcon});
+            },
+           onEachFeature: function (feature, layer) {
+				var popupText = "<b>"+ "This washroom is inside a "+ feature.properties.BuildingTy +" building"
+				
+
+				layer.bindPopup(popupText);
+			}
+           
+	   });
+       
+		var mark = L.markerClusterGroup();
+		mark.addLayer(points);
+		map.addLayer(mark);
+        
+    </script>
+ <script type="text/javascript" src="app.js"></script>
+        
+</body>
+
+</html>
